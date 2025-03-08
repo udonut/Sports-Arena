@@ -2,11 +2,16 @@ package com.example;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+//  Class to add a player
 
 public class addPlayer extends JFrame implements ActionListener {
 
@@ -105,6 +110,30 @@ public class addPlayer extends JFrame implements ActionListener {
                 messageLabel.setText("Please fill all the fields");
             } else {
                 int number = Integer.parseInt(strNumber);
+                String query = "INSERT INTO Players (player_name, player_address, sport_type, phone_number, player_type) VALUES (?, ?, ?, ?, ?)";
+                Connection con = null;
+                PreparedStatement st = null;
+                try {
+                    con = sqlCon.sqlCon();
+                    con.setAutoCommit(false);
+                    st = con.prepareStatement(query);
+                        st.setString(1, name);
+                        st.setString(2, address);
+                        st.setString(3, sport);
+                        st.setString(4, strNumber);
+                        st.setString(5, type);
+                    st.execute();
+                    System.out.println("Your Coach Info Added");
+                    con.commit();
+                } catch (SQLException se) {
+                    if (con != null) {
+                        try {
+                            con.rollback();
+                        } catch (SQLException ee) {
+                            ee.printStackTrace();
+                        }
+                    }
+                }
                 nameText.setEnabled(false);
                 addressText.setEnabled(false);
                 sportType.setEnabled(false);

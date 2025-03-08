@@ -1,11 +1,18 @@
 package com.example;
 
+//Only need to run this file to start the program
+//This file will create a new startPage object which will start the program
+
 public class App 
 {
-    public static void main( String[] args ) {
-        //new startPage();
-        //new managerMenu();
-        //new coachMenu();
-        new audienceMenu();
+
+    public App() {
+    }
+
+
+    public static void main( String[] args ) throws Exception {
+        new startPage();
+
+
     }
 }

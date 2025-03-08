@@ -6,6 +6,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class coachMenu extends JFrame implements ActionListener {
 
@@ -14,6 +17,9 @@ public class coachMenu extends JFrame implements ActionListener {
     JButton viewCoaches, addCoach, viewEvents, backButton;
     JButton viewPlayers, addPlayer, updatePlayer, removePlayer;
     JButton viewTeams, addTeam, updateTeam, removeTeam;
+    DefaultTableModel tableModel;
+    JScrollPane scrollPane;
+    JTable table; 
 
     String record = new String(); 
         
@@ -53,10 +59,6 @@ public class coachMenu extends JFrame implements ActionListener {
         updateTeam.setBounds(180, 170, 125, 40);
         updateTeam.addActionListener(this);
 
-        removeTeam = new JButton("Remove Team");
-        removeTeam.setBounds(180, 220, 125, 40);
-        removeTeam.addActionListener(this);
-
         //Player menu
         viewPlayers = new JButton("View Players");
         viewPlayers.setBounds(330, 70, 125, 40);
@@ -69,16 +71,19 @@ public class coachMenu extends JFrame implements ActionListener {
         updatePlayer = new JButton("Update Player");
         updatePlayer.setBounds(330, 170, 125, 40);
         updatePlayer.addActionListener(this);
-        
-        removePlayer = new JButton("Remove Player");
-        removePlayer.setBounds(330, 220, 125, 40);
-        removePlayer.addActionListener(this);
 
         backButton = new JButton("Back to start page");
-        backButton.setBounds(300, 270, 150, 40);
+        backButton.setBounds(300, 400, 150, 40);
         backButton.addActionListener(this);
 
-        this.setTitle("Player Menu");
+        tableModel = new DefaultTableModel();
+
+        table = new JTable(tableModel);
+        scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(40, 270, 400, 100);
+
+
+        this.setTitle("Coach Menu");
         this.setResizable(false);
         this.setLayout(null);
         this.pack();
@@ -92,55 +97,45 @@ public class coachMenu extends JFrame implements ActionListener {
         this.add(viewTeams);
         this.add(addTeam);
         this.add(updateTeam);
-        this.add(removeTeam);
         this.add(viewPlayers);
         this.add(addPlayer);
         this.add(updatePlayer);
-        this.add(removePlayer);
         this.add(backButton);
         this.add(showRecord);
+        this.add(scrollPane);
+        scrollPane.setVisible(false);
     }
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == viewEvents) {
-            showRecord.setVisible(true);
-            record = "Events";
-            showRecord.setText(record);
+            DisplayRecords.displayEvents(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == viewTeams) {
-            showRecord.setVisible(true);
-            record = "Teams";
-            showRecord.setText(record);
+            DisplayRecords.displayTeams(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == addTeam) {
             System.out.println("Add Team");
             new addTeam();
         } else if (e.getSource() == updateTeam) {
             System.out.println("Update Team");
             new updateTeam();
-        } else if (e.getSource() == removeTeam) {
-            System.out.println("Remove Team");
-            new removeTeam();
         } else if (e.getSource() == viewCoaches) {
-            showRecord.setVisible(true);
-            record = "Coaches";
-            showRecord.setText(record);
+            DisplayRecords.displayCoaches(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == addCoach) {
             System.out.println("Add Coach");
             new addCoach();
         } else if (e.getSource() == viewPlayers) {
-            showRecord.setVisible(true);
-            record = "Players";
-            showRecord.setText(record);
+            DisplayRecords.displayPlayers(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == addPlayer) {
             System.out.println("Add Player");
             new addPlayer();
         } else if (e.getSource() == updatePlayer) {
             System.out.println("Update Player");
             new updatePlayer();
-        } else if (e.getSource() == removePlayer) {
-            System.out.println("Remove Player");
-            new removePlayer();
         } else if (e.getSource() == backButton) {
             System.out.println("Go Back");
             this.dispose();

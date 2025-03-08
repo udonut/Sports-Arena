@@ -2,6 +2,9 @@ package com.example;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -16,7 +19,7 @@ public class updateTeam extends JFrame implements ActionListener {
     JButton saveButton, backButton;
     JComboBox comboBox;
 
-    String[] team = {"Team name", "Team hometown", "Number of players"};
+    String[] team = {"Team hometown", "Number of players"};
     private String teamChoice; 
         
     public updateTeam() {
@@ -83,23 +86,58 @@ public class updateTeam extends JFrame implements ActionListener {
         if (e.getSource() == comboBox) {
             teamChoice = (String) comboBox.getSelectedItem();
         } else if (e.getSource() == saveButton) {
-            if (teamChoice.equals(team[0])) {
-                System.out.println("Team name:" + teamChoice);
-            } else if (teamChoice.equals(team[1])) {
-                System.out.println("Team hometown:" + teamChoice);
-            } else if (teamChoice.equals(team[2])) {
-                System.out.println("Number of players:" + teamChoice);
+            String name = teamName.getText();
+            String newString = newEntry.getText();   
+            if (name.isEmpty() || newString.isEmpty()) {
+                messageLabel.setVisible(true);
+                messageLabel.setText("Please fill all the fields");
+            } else {
+                if (teamChoice.equals(team[0])) { //Choice is Hometown
+                    String query = "UPDATE Teams SET hometown = ? WHERE team_name = ?";
+                    Connection con = null;
+                    PreparedStatement st = null;
+                    try {
+                        con = sqlCon.sqlCon();
+                        con.setAutoCommit(false);
+                        st = con.prepareStatement(query);
+                                    st.setString(1, newString);
+                                    st.setString(2, name);
+                                st.execute();
+                                System.out.println("Team Hometown updated to:" + newString);
+                            con.commit();
+                    } catch (SQLException se) {
+                        if (con != null) {
+                            try {
+                                con.rollback();
+                            } catch (SQLException ee) {
+                                ee.printStackTrace();
+                            }
+                        }
+                    }
+                } else if (teamChoice.equals(team[1])) { //Choice is Player Count
+                    int newNumber = Integer.parseInt(newString);
+                    String query = "UPDATE Teams SET player_count = ? WHERE team_name = ?";
+                    try (Connection con = sqlCon.sqlCon();
+                            PreparedStatement st = con.prepareStatement(query)) {
+                                st.setInt(1, newNumber);
+                                st.setString(2, name);
+                            st.execute();
+                            System.out.println("Team's number of players updated to:" + newString);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                }
+                messageLabel.setVisible(true);
+                teamName.setEditable(false);
+                newEntry.setEditable(false);
+                comboBox.setEditable(false);
+                saveButton.setEnabled(false);
+                backButton.setText("Close");
+                messageLabel.setVisible(true);
             }
-            messageLabel.setVisible(true);
-            teamName.setEditable(false);
-            newEntry.setEditable(false);
-            comboBox.setEditable(false);
-            saveButton.setEnabled(false);
-            backButton.setText("Close");
-            messageLabel.setVisible(true);
         } else if (e.getSource() == backButton) {
             this.dispose();
         } 
     }
-
 }
+

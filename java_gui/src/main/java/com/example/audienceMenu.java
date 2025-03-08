@@ -6,12 +6,18 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class audienceMenu extends JFrame implements ActionListener {
 
     JLabel label, showRecord;
-    JButton viewEvents, viewTeams, viewArenas, backButton, viewStaff, buyTicket;
-    String record = new String(); 
+    JButton viewEvents, viewTeams, viewArenas, viewSponsors, backButton, viewStaff, buyTicket;
+    String record = new String();
+    DefaultTableModel tableModel;
+    JScrollPane scrollPane;
+    JTable table; 
 
     public audienceMenu() {
 
@@ -41,15 +47,25 @@ public class audienceMenu extends JFrame implements ActionListener {
         viewStaff.setBounds(180, 120, 125, 40);
         viewStaff.addActionListener(this);
 
+        viewSponsors = new JButton("View Sponsors");
+        viewSponsors.setBounds(330, 70, 125, 40);
+        viewSponsors.addActionListener(this);
+
         buyTicket = new JButton("Buy Ticket");
-        buyTicket.setBounds(330, 70, 125, 40);
+        buyTicket.setBounds(330, 120, 125, 40);
         buyTicket.addActionListener(this);
 
         backButton = new JButton("Back to start page");
-        backButton.setBounds(300, 250, 150, 40);
+        backButton.setBounds(300, 300, 150, 40);
         backButton.addActionListener(this);
 
-        this.setTitle("Manager Menu");
+        tableModel = new DefaultTableModel();
+
+        table = new JTable(tableModel);
+        scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(40, 180, 400, 100);
+
+        this.setTitle("Audience Menu");
         this.setResizable(false);
         this.setLayout(null);
         this.pack();
@@ -64,28 +80,28 @@ public class audienceMenu extends JFrame implements ActionListener {
         this.add(backButton);
         this.add(showRecord);
         this.add(buyTicket);
-
-
+        this.add(scrollPane);
+        this.add(viewSponsors);
+        scrollPane.setVisible(false);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == viewEvents) {
-            showRecord.setVisible(true);
-            record = "Events";
-            showRecord.setText(record);
+            DisplayRecords.displayEvents(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == viewTeams) {
-            showRecord.setVisible(true);
-            record = "Teams";
-            showRecord.setText(record);
+            DisplayRecords.displayTeams(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == viewArenas) {
-            showRecord.setVisible(true);
-            record = "Arenas";
-            showRecord.setText(record);
+            DisplayRecords.displayArenas(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == viewStaff) {
-            showRecord.setVisible(true);
-            record = "Staff";
-            showRecord.setText(record);
+            DisplayRecords.displayStaff(tableModel);
+            scrollPane.setVisible(true);
+        } else if (e.getSource() == viewSponsors) {
+            DisplayRecords.displaySponsors(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == buyTicket) {
             new buyTicket();
         } else if (e.getSource() == backButton) {

@@ -2,6 +2,9 @@ package com.example;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -47,7 +50,7 @@ public class updatePlayer extends JFrame implements ActionListener {
 
         messageLabel = new JLabel();
         messageLabel.setText("Player Info Updated Successfully!");
-        messageLabel.setBounds(70, 200, 300, 30);
+        messageLabel.setBounds(70, 175, 300, 30);
         messageLabel.setVisible(false);
 
         saveButton = new JButton("Save");
@@ -82,21 +85,92 @@ public class updatePlayer extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == comboBox) {
             choice = (String) comboBox.getSelectedItem();
-        } else if (e.getSource() == saveButton) {
-            if (choice.equals(player[0])) {
-                System.out.println("Team name:" + choice);
-            } else if (choice.equals(player[1])) {
-                System.out.println("Team hometown:" + choice);
-            } else if (choice.equals(player[2])) {
-                System.out.println("Number of players:" + choice);
+            if (choice.equals(player[4])) {
+                messageLabel.setVisible(true);
+                messageLabel.setText("Type only 'single' or 'team' in the new value field");
             }
-            messageLabel.setVisible(true);
-            playerName.setEditable(false);
-            newEntry.setEditable(false);
-            comboBox.setEditable(false);
-            saveButton.setEnabled(false);
-            backButton.setText("Close");
-            messageLabel.setVisible(true);
+        } else if (e.getSource() == saveButton) {
+            String name = playerName.getText();
+            String newString = newEntry.getText();   
+            if (name.isEmpty() || newString.isEmpty()) {
+                messageLabel.setVisible(true);
+                messageLabel.setText("Please fill all the fields");
+            } else {
+                if (choice.equals(player[0])) { //Choice is Name
+                    String query = "UPDATE Players SET player_name = ? WHERE player_name = ?";
+                    Connection con = null;
+                    PreparedStatement st = null;
+                    try {
+                        con = sqlCon.sqlCon();
+                        con.setAutoCommit(false);
+                        st = con.prepareStatement(query);
+                            st.setString(1, newString);
+                            st.setString(2, name);
+                        st.execute();
+                        System.out.println("Player name updated to:" + newString);
+                        con.commit();
+                    } catch (SQLException se) {
+                        if (con != null) {
+                            try {
+                                con.rollback();
+                            } catch (SQLException ee) {
+                                ee.printStackTrace();
+                            }
+                        }
+                    }
+                } else if (choice.equals(player[1])) { //Choice is Address
+                    String query = "UPDATE Players SET player_address = ? WHERE player_name = ?";
+                    try (Connection con = sqlCon.sqlCon();
+                        PreparedStatement st = con.prepareStatement(query)) {
+                            st.setString(1, newString);
+                            st.setString(2, name);
+                        st.execute();
+                        System.out.println("Player address updated to:" + newString);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                } else if (choice.equals(player[2])) { //Choice is Sport
+                    String query = "UPDATE Players SET sport_type = ? WHERE player_name = ?";
+                    try (Connection con = sqlCon.sqlCon();
+                        PreparedStatement st = con.prepareStatement(query)) {
+                            st.setString(1, newString);
+                            st.setString(2, name);
+                        st.execute();
+                        System.out.println("Player sport updated to:" + newString);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                } else if (choice.equals(player[3])) { //Choice is Phone number
+                    String query = "UPDATE Players SET phone_number = ? WHERE player_name = ?";
+                    try (Connection con = sqlCon.sqlCon();
+                        PreparedStatement st = con.prepareStatement(query)) {
+                            st.setString(1, newString);
+                            st.setString(2, name);
+                        st.execute();
+                        System.out.println("Player phone number updated to:" + newString);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                } else if (choice.equals(player[4])) { //Choice is Player type
+                    String query = "UPDATE Players SET player_type = ? WHERE player_name = ?";
+                    try (Connection con = sqlCon.sqlCon();
+                        PreparedStatement st = con.prepareStatement(query)) {
+                            st.setString(1, newString);
+                            st.setString(2, name);
+                        st.execute();
+                        System.out.println("Player type updated to:" + newString);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                messageLabel.setVisible(true);
+                playerName.setEditable(false);
+                newEntry.setEditable(false);
+                comboBox.setEditable(false);
+                saveButton.setEnabled(false);
+                backButton.setText("Close");
+                messageLabel.setVisible(true);
+            }
         } else if (e.getSource() == backButton) {
             this.dispose();
         }     

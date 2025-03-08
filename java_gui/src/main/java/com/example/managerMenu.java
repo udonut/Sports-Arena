@@ -6,13 +6,22 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+
+//Frame showing the menu for the manager
 
 public class managerMenu extends JFrame implements ActionListener {
     
     JLabel label, showRecord;
-    JButton eventButton, viewTeams, viewArenas, viewCoaches, addEvent, removeEvent, backButton;
-    JButton viewManagers, addManager;
+    JButton eventButton, viewTeams, viewArenas, viewCoaches, addEvent, viewSponsors, backButton;
+    JButton viewManagers, addManager, viewAudience;
     String record = new String(); 
+    DefaultTableModel tableModel;
+    JScrollPane scrollPane;
+    JTable table;
         
     public managerMenu() {
 
@@ -22,7 +31,7 @@ public class managerMenu extends JFrame implements ActionListener {
 
         showRecord = new JLabel();
         showRecord.setText(record);
-        showRecord.setBounds(70, 300, 300, 30);
+        showRecord.setBounds(70, 230, 500, 30);
         setVisible(false);
 
         eventButton = new JButton("View Events");
@@ -33,9 +42,9 @@ public class managerMenu extends JFrame implements ActionListener {
         addEvent.setBounds(30, 120, 125, 40);
         addEvent.addActionListener(this);
 
-        removeEvent = new JButton("Remove Event");
-        removeEvent.setBounds(30, 170, 125, 40);
-        removeEvent.addActionListener(this);
+        viewSponsors = new JButton("View Sponsors");
+        viewSponsors.setBounds(30, 170, 125, 40);
+        viewSponsors.addActionListener(this);
 
         viewTeams = new JButton("View Teams");
         viewTeams.setBounds(180, 70, 125, 40);
@@ -44,6 +53,10 @@ public class managerMenu extends JFrame implements ActionListener {
         viewArenas = new JButton("View Arenas");
         viewArenas.setBounds(180, 120, 125, 40);
         viewArenas.addActionListener(this);
+
+        viewAudience = new JButton("View Audience");
+        viewAudience.setBounds(180, 170, 125, 40);
+        viewAudience.addActionListener(this);
 
         viewCoaches = new JButton("View Coaches");
         viewCoaches.setBounds(330, 70, 125, 40);
@@ -61,6 +74,12 @@ public class managerMenu extends JFrame implements ActionListener {
         backButton.setBounds(300, 350, 150, 40);
         backButton.addActionListener(this);
 
+        tableModel = new DefaultTableModel();
+
+        table = new JTable(tableModel);
+        scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(40, 230, 400, 100);
+
         this.setTitle("Manager Menu");
         this.setResizable(false);
         this.setLayout(null);
@@ -72,44 +91,46 @@ public class managerMenu extends JFrame implements ActionListener {
         this.add(eventButton);
         this.add(viewTeams);
         this.add(viewArenas);
+        this.add(viewAudience);
         this.add(addEvent);
-        this.add(removeEvent);
+        this.add(viewSponsors);
         this.add(backButton);
         this.add(showRecord);
         this.add(viewCoaches);
         this.add(viewManagers);
         this.add(addManager);
+        this.add(scrollPane);
+        scrollPane.setVisible(false);
     }
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == eventButton) {
-            showRecord.setVisible(true);
-            record = "Events";
-            showRecord.setText(record);
+            DisplayRecords.displayEvents(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == viewTeams) {
-            showRecord.setVisible(true);
-            record = "Teams";
-            showRecord.setText(record);
+            DisplayRecords.displayTeams(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == viewArenas) {
-            showRecord.setVisible(true);
-            record = "Arenas";
-            showRecord.setText(record);
+            DisplayRecords.displayArenas(tableModel);
+            scrollPane.setVisible(true);
+        } else if (e.getSource() == viewAudience) {
+            DisplayRecords.displayAudience(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == viewCoaches) {
-            showRecord.setVisible(true);
-            record = "Coaches";
-            showRecord.setText(record);
+            DisplayRecords.displayCoaches(tableModel);
+            scrollPane.setVisible(true);
         } else if (e.getSource() == addEvent) {
             System.out.println("Add Event");
             new addEvent();
-        } else if (e.getSource() == removeEvent) {
-            System.out.println("Remove Event");
-            new removeEvent();
+        } else if (e.getSource() == viewSponsors) {
+            DisplayRecords.displaySponsors(tableModel);
+            scrollPane.setVisible(true);
+            System.out.println("Sponsors showed");
         } else if (e.getSource() == viewManagers) {
-            showRecord.setVisible(true);
-            record = "Managers";
-            showRecord.setText(record);
+            scrollPane.setVisible(true);
+            DisplayRecords.displayManagers(tableModel);
         } else if (e.getSource() == addManager) {
             System.out.println("Add Manager");
             new managerLogin();
@@ -119,4 +140,11 @@ public class managerMenu extends JFrame implements ActionListener {
             new startPage();
         }
     }
+
+
+    public static void main(String[] args) {
+        new managerMenu();
+    }
+
+
 }

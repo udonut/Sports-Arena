@@ -2,11 +2,16 @@ package com.example;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+//Class to add a coach
 
 public class addCoach extends JFrame implements ActionListener {
 
@@ -90,18 +95,51 @@ public class addCoach extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == saveButton) {
-            System.out.println("Your Coach Info Added");
-            coachName.setEditable(false);
-            coachNumber.setEditable(false);
-            teamName.setEditable(false);
-            playerName.setEditable(false);
-            saveButton.setEnabled(false);
-            messageLabel.setVisible(true);
-            cancelButton.setText("Close");
+            String name = coachName.getText();
+            String number = coachNumber.getText();
+            String tName = teamName.getText();
+            String pName = playerName.getText();    
+            if (name.isEmpty() || number.isEmpty() || tName.isEmpty() || pName.isEmpty()) {
+                messageLabel.setVisible(true);
+                messageLabel.setText("Please fill all the fields");
+            } else {
+                String query = "INSERT INTO Coach (coach_name, phone_number, team_name, player_name) VALUES (?, ?, ?, ?)";
+                Connection con = null;
+                PreparedStatement st = null;
+                try {
+                    con = sqlCon.sqlCon();
+                    con.setAutoCommit(false);
+                    st = con.prepareStatement(query);
+                        st.setString(1, name);
+                        st.setString(2, number);
+                        st.setString(3, tName);
+                        st.setString(4, pName);
+                    st.execute();
+                    System.out.println("Your Coach Info Added");
+                    con.commit();
+                } catch (SQLException se) {
+                    if (con != null) {
+                        try {
+                            con.rollback();
+                        } catch (SQLException ee) {
+                            ee.printStackTrace();
+                        }
+                    }
+                }
+                coachName.setEditable(false);
+                coachNumber.setEditable(false);
+                teamName.setEditable(false);
+                playerName.setEditable(false);
+                saveButton.setEnabled(false);
+                messageLabel.setVisible(true);
+                cancelButton.setText("Close");
+            }
         } else if (e.getSource() == cancelButton) {
             this.dispose();
         }
         
     }
+
+   
 
 }

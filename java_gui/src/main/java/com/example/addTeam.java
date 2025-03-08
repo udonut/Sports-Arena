@@ -2,11 +2,16 @@ package com.example;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+//  Class to add a team
 
 public class addTeam extends JFrame implements ActionListener {
 
@@ -82,13 +87,44 @@ public class addTeam extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == saveButton) {
+            String name = teamName.getText();
+            String town = hometown.getText();
+            String pCount = count.getText();         
+            if (name.isEmpty() || town.isEmpty() || pCount.isEmpty()) {
+                SuccessMessage.setVisible(true);
+                SuccessMessage.setText("Please fill all the fields");
+            } else {
+                int playerCount = Integer.parseInt(pCount);
+                String query = "INSERT INTO Teams (team_name, hometown, player_count) VALUES (?, ?, ?)";
+                Connection con = null;
+                PreparedStatement st = null;
+                try {
+                    con = sqlCon.sqlCon();
+                    con.setAutoCommit(false);
+                    st = con.prepareStatement(query);
+                        st.setString(1, name);
+                        st.setString(2, town);
+                        st.setInt(3, playerCount);
+                    st.execute();
+                    System.out.println("Team Info Added");
+                    con.commit();
+                } catch (SQLException se) {
+                    if (con != null) {
+                        try {
+                            con.rollback();
+                        } catch (SQLException ee) {
+                            ee.printStackTrace();
+                        }
+                    }
+                }
             System.out.println("Team added");
             teamName.setEditable(false);
             hometown.setEditable(false);
             count.setEditable(false);
             saveButton.setEnabled(false);
             SuccessMessage.setVisible(true);
-            cancelButton.setText("Close");
+                cancelButton.setText("Close");
+            }
         } else if (e.getSource() == cancelButton) {
             this.dispose();
         }
